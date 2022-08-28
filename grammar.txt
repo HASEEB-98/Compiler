@@ -1,5 +1,195 @@
-This will be your grammar file in future assignments
-Leave it as it is for now
-GRAMMAR:
+// Updated Grammer along with translation scheme
 
-Regular Expressions used in GRAMMAR
+
+{	
+	// global variable decleration
+	int line_num = 1;
+	string TAC = "";
+}
+
+
+// Code in File 
+
+	MCode -> Function Z { emit(TAC) }
+	Z -> Function Z | ^
+
+
+// Code 
+
+	CODE -> Init { TAC += line_num + " " + Init.s + "\n" } {line_num += 1}
+	CODE -> Print { TAC += line_num + " " + Print.s + "\n" } {line_num += 1}
+	CODE -> IF 
+	CODE -> Assign { TAC += line_num + " " + Assign.s + "\n" } {line_num += 1}
+	CODE -> FOR {line_num += 1}
+	CODE -> Return { TAC += line_num + " " + Return.s + "\n" } {line_num += 1}
+	CODE -> Input { TAC += line_num + " " + Input.s + "\n" } {line_num += 1}
+	CODE -> Call {line_num += 1}
+	CODE -> ^
+
+
+// Initialization 
+
+	Init -> id X {Init.s = id.value + X.s}
+	X    -> <- E dtype; {X.s = E.s + ';'}
+	X    -> dtype; {X.s = ';'}
+
+
+// Print 
+
+	Print -> print {Print.s = "out "} pst {Print.s += pst.s};
+	pst -> string {pst.s = string.v} | E {pst.s = E.s}
+
+
+// If, Else if, Else condition
+
+	IF ->   if condition {TAC += line_num + " if " + condition.s + " goto " + (line_num + 2) + "\n"} {line_num += 1} : 
+		{TAC += line_num + " " + " goto "} {line_num += 1} {temp1 = TAC} {TAC = ""}
+	      	begin CODE end 
+		{temp1 += line_num + 1 + "\n"} {TAC = temp1 + TAC}
+		{temp1 = TAC} {TAC = ""} {curr_line = line_num} {line_num += 1} Next { temp1 += curr_line + " goto " + line_num + "\n" } { TAC = temp + TAC }
+	
+	ELSEIF -> 	else if condition {TAC += line_num + " if " + condition.s + " goto " + (line_num + 2) + "\n"} {line_num += 1} : 
+			{TAC += line_num + " " + " goto "} {line_num += 1} {temp1 = TAC} {TAC = ""}
+	      		begin CODE end 
+			{temp1 += line_num + 1 + "\n"} {TAC = temp1 + TAC}
+			{temp1 = TAC} {TAC = ""} {curr_line = line_num} {line_num += 1} Next { temp1 += curr_line + " goto " + line_num + "\n" } {
+
+	ELSE -> else : begin CODE end | ^	
+	
+	Next -> ELSE|ELSEIF Next
+
+
+// Assignment 
+
+	Assign -> id <- E ; {Assign = id.value + " = " + E.s + ";"}
+
+
+// CALL	
+
+	CALL -> call id P {TAC += line_num + " call " + id.value + " , " + P.s + " , " + newTemp() + ";\n"}
+	P -> id {TAC += line_num + " param " + id.value + '\n'} { line_num += 1} P { P.s += 1 }|; { P.s = 0 }
+
+
+// For loop 
+
+	FOR ->  for {TAC += line_num + " "} init {TAC += init.s + "\n"}|assign {TAC += assign.s + "\n"} {line_num += 1},
+		{curr_line = line_num} condition {TAC += line_num + " if " + condition.s + " goto " + (line_num + 2) + "\n"} {line_num += 1}, 
+		{TAC += line_num + " " + " goto "} {line_num += 1} {temp1 = TAC} {TAC = ""}
+		assign: begin CODE end {temp1 += line_num + 1 + "\n"} {TAC = temp1 + TAC} {TAC += line_num + " " + assign.s + "\n"} {line_num += 1}
+		{TAC += line_num + " goto " + curr_line + "\n"}
+
+
+// Function 
+
+	Function-> func dtype id params : begin CODE end
+	params -> param params|^
+	param  -> id dtype
+
+
+// Return 
+
+	Return -> return E ; {Return.s = "ret " + E.s + ";"} 
+
+
+// Input 
+
+	input -> in id ; {input.s = ' in ' + id.value + ';' }
+
+
+// Condition 
+
+	Condition -> E {Condition.s += E.s} RO {Condition.s += RO.s} E {Condition.s += E.s}
+	RO -> = {RO.s = '==' }|< {RO.s = '<' }|<= {RO.s = '<=' }|> {RO.s = '>' }|>= {RO.s = '>=' }|~= {RO.s = '~=' }
+
+
+// Data Type
+
+	dtype -> int|char|string|bool
+
+
+// Expression 
+
+	E -> T {E.s += T.s} R {E.s += R.s}
+	R -> + {R.s = '+'} T {R.s += T.s} R {R.s += R1.s}|- {R.s = '-'} T {R.s += T.s} R {R.s += R1.s}|^
+	T -> F {T.s += F.s} R' {T.s += R'.s}
+	R' -> * {R'.s = '*'} F {R.s += F.s}| / {R'.s = '/'} F {R.s += F.s}| % {R'.s = '%'} F {R.s += F.s}|^
+	F -> id {F.s id.value} | number {F.s number.value}
+
+
+// Strings 
+
+	string -> "str"
+	str -> str' str
+	str' -> character|digit|special
+
+
+// Comment 
+
+	comment -> # com \n
+	com -> com' com
+	com' -> character|digit|special
+
+
+// Identifiier 
+
+	id -> character id'
+	id' -> id" id'|^
+	id" -> character|digit
+
+
+// Digits 
+
+	digit -> 0|1|2|3|4|5|6|7|8|9
+
+
+// Characters 
+
+	character -> a|A|...|z|Z
+
+
+// Numeric Literals 
+
+	number -> digit number|^
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

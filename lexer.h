@@ -49,6 +49,7 @@ enum class TokenType
 	ERROR
 
 };
+
 //structure of a token 
 struct token
 {
@@ -60,6 +61,7 @@ struct token
 	token();
 	void Print();
 };
+
 class lexer
 {
 	vector<char> stream;  //used for storing file sample_code.cc content
