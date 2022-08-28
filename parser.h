@@ -1,42 +1,51 @@
 #ifndef _PARSER_H_
 #define _PARSER_H_
 #include "lexer.h"
+
 //for future assignments leave it as it is
 class parser
 {
     lexer _lexer;
+    ofstream fout_symbol_table;
+    ofstream fout_TAC;
+    int line_num;
+    int temp_count;
+    string TAC = "";
 public:
+    string newTemp();
     void syntax_error();
     token expect(TokenType expected_type);
     parser(const char filename[]);
     void readAndPrintAllInput();
     void resetPointer();
-    void E();
-    void T();
-    void R();
-    void F();
-    void rPrime();
+    void addToSymbolTable(string type, string symbol);
+    string E();
+    string T();
+    string R();
+    string F();
+    string rPrime();
     void match(string strObj);
-    void assign();
+    string assign();
     void init();
-    void X();
-    void print();
-    void pst();
+    string X();   
+    string print();
+    string pst();
     void match_lexeme(string strObj);
-    void condition();
-    void ro();
-    void _return();
-    void input();
+    string condition();
+    string ro();
+    string _return();
+    string input();
     void _for();
     void _if();
     void next();
     void _else();
     void _elseif();
+    void _call();
     void _function();
     void params();
     void param();
     void code();
-    void Q();
+    int multipleDeclaration();
     void parserMain();
     void z();
     /*Terminal functions goes here use peek and expect*/
