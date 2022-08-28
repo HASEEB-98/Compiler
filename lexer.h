@@ -5,6 +5,12 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <unordered_map>
+#include <iterator>
+#include <bits/stdc++.h>
+#include <utility>
+#include <stdio.h>
+#include <stdlib.h>
 using namespace std;
 
 // all your tokens goes here

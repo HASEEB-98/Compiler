@@ -22,9 +22,11 @@ parser::parser(const char filename[])
 {
 	_lexer = lexer(filename);
 	fout_symbol_table.open("symbol_table.txt");
-	fout_TAC.open("TAC.txt");
+	fout_TAC.open("tac.txt");
 	line_num = 1;
 	temp_count = 0;
+	TAC = "";
+	currentAddress = 0;
 }
 
 void parser::readAndPrintAllInput() // read and print allinputs (provided)
@@ -57,14 +59,14 @@ string parser::R()
 	if (_lexer.peek(1).tokenType == TokenType::ADD_OP)
 	{
 		expect(TokenType::ADD_OP);
-		exp += "+";
+		exp += " + ";
 		exp += T();
 		exp += R();
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::SUBTRACT_OP)
 	{
 		expect(TokenType::SUBTRACT_OP);
-		exp += "-";
+		exp += " - ";
 		exp += T();
 		exp += R();
 	}
@@ -110,19 +112,19 @@ string parser::rPrime()
 	if (_lexer.peek(1).tokenType == TokenType::MULTIPLY_OP)
 	{
 		expect(TokenType::MULTIPLY_OP);
-		exp += "*";
+		exp += " * ";
 		exp += F();
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::DIVIDE_OP)
 	{
 		expect(TokenType::DIVIDE_OP);
-		exp += "/";
+		exp += " / ";
 		exp += F();
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::MOD_OP)
 	{
 		expect(TokenType::MOD_OP);
-		exp += "%";
+		exp += " % ";
 		exp += F();
 	}
 	else
@@ -164,19 +166,16 @@ string parser::X()
 		expect(TokenType::ASSIGN);
 		exp += E();
 		expect(TokenType::SEMI_COLON);
-		exp += ";";
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::INT)
 	{
 		expect(TokenType::INT);
 		expect(TokenType::SEMI_COLON);
-		exp += ";";
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::CHAR)
 	{
 		expect(TokenType::CHAR);
 		expect(TokenType::SEMI_COLON);
-		exp += ";";
 	}
 	else
 	{
@@ -192,7 +191,6 @@ string parser::print()
 		expect(TokenType::PRINT);
 		output += pst();
 		expect(TokenType::SEMI_COLON);
-		output += ";";
 		
 	}
 	return output;
@@ -248,7 +246,6 @@ string parser::_return()
 	expect(TokenType::RETURN);
 	ret += E();
 	expect(TokenType::SEMI_COLON);
-	ret += ";";
 	return ret;
 }
 
@@ -258,7 +255,6 @@ string parser::input()
 	expect(TokenType::IN);
 	in += _lexer.peek(1).lexeme;
 	expect(TokenType::ID);
-	in += ";";
 	expect(TokenType::SEMI_COLON);
 
 	return in;
@@ -268,7 +264,7 @@ void parser::_for()
 {
 	expect(TokenType::FOR);
 
-	TAC  += to_string(line_num) + " ";
+	//TAC  += to_string(line_num) + " ";
 	TAC += assign();
 	TAC += "\n";
 	line_num++;
@@ -277,12 +273,14 @@ void parser::_for()
 
 	int curr_line = line_num;
 
-	TAC += to_string(line_num) + " if ";
+	//TAC  += to_string(line_num) + " ";
+	TAC += "if ";
 	TAC += condition();
 	TAC += " goto " + to_string(line_num + 2) + "\n";
 	line_num++;
 	
-	TAC += to_string(line_num) + " goto ";
+	//TAC += to_string(line_num) + " goto ";
+	TAC += "goto ";
 	line_num++;
 
 	expect(TokenType::COMMA);
@@ -297,27 +295,31 @@ void parser::_for()
 	code();
 	expect(TokenType::END);
 
-	temp1 += to_string(line_num + 1);
+	temp1 += to_string(line_num + 2);
 	temp1 += "\n";
 
 	TAC = temp1 + TAC;
 	
-	TAC += to_string(line_num) + " " + temp2 + "\n";
+	//TAC += to_string(line_num) + " " + temp2 + "\n";
+	TAC += temp2 + "\n";
 	line_num++;
 
-	TAC += to_string(line_num) + " goto " + to_string(curr_line) + "\n";
+	//TAC += to_string(line_num) + " goto " + to_string(curr_line) + "\n";
+	TAC += "goto " + to_string(curr_line) + "\n";
 }
 
 void parser::_if()
 {
 	expect(TokenType::IF);	
 
-	TAC += to_string(line_num) + " if ";
+	//TAC += to_string(line_num) + " if ";
+	TAC += "if ";
 	TAC += condition();
 	TAC += " goto " + to_string(line_num + 2) + "\n";
 	line_num++;
 	
-	TAC += to_string(line_num) + " goto ";
+	//TAC += to_string(line_num) + " goto ";
+	TAC += "goto ";
 	line_num++;
 
 	string temp = TAC;
@@ -340,7 +342,8 @@ void parser::_if()
 		int curr_line = line_num;
 		line_num++;
 		next();	
-		temp += to_string(curr_line) + " goto " + to_string(line_num) + "\n";
+		//temp += to_string(curr_line) + " goto " + to_string(line_num) + "\n";
+		temp += "goto " + to_string(line_num) + "\n";
 		TAC = temp + TAC;
 	}
 }
@@ -352,12 +355,13 @@ void parser::_elseif()
 			
 		expect(TokenType::ELIF);	
 
-		TAC += to_string(line_num) + " if ";
-		TAC += condition();
+		//TAC += to_string(line_num) + " if ";
+		TAC += "if ";		TAC += condition();
 		TAC += " goto " + to_string(line_num + 2) + "\n";
 		line_num++;
 		
-		TAC += to_string(line_num) + " goto ";
+		//TAC += to_string(line_num) + " goto ";
+		TAC += "goto ";
 		line_num++;
 
 		string temp = TAC;
@@ -380,7 +384,8 @@ void parser::_elseif()
 			int curr_line = line_num;
 			line_num++;
 			next();	
-			temp += to_string(curr_line) + " goto " + to_string(line_num) + "\n";
+			//temp += to_string(curr_line) + " goto " + to_string(line_num) + "\n";
+			temp += "goto " + to_string(line_num) + "\n";
 			TAC = temp + TAC;
 		}
 	}
@@ -425,11 +430,14 @@ void parser::_call(){
 	}
 
 	for (vector<string>::iterator i = parameters.begin(); i != parameters.end(); ++i) {
-		TAC += to_string(line_num) + " param " + *i + "\n";
+		//TAC += to_string(line_num) + " param " + *i + "\n";
+		TAC += "param " + *i + "\n";
 		line_num++;
 	}
 	
-	TAC += to_string(line_num) + " call " + func_name + ", " + to_string(parameters.size()) + ", " + newTemp() + ";\n";
+	//TAC += to_string(line_num) + " call " + func_name + ", " + to_string(parameters.size()) + ", " + newTemp() + "\n";
+	TAC += "call " + func_name + ", " + to_string(parameters.size()) + ", " + newTemp() + "\n";
+	TAC += "call " + func_name + ", " + to_string(parameters.size()) + ", " + newTemp() + "\n";
 	expect(TokenType::SEMI_COLON);	
 }
 
@@ -500,11 +508,12 @@ int parser::multipleDeclaration()
 		if (_lexer.peek(1).tokenType == TokenType::ASSIGN)
 		{
 			line_num++;
-			TAC += to_string(line_num) + " " + id;
+			//TAC += to_string(line_num) + " " + id;
+			TAC += id;
 			expect(TokenType::ASSIGN);
 			TAC += " = ";
 			TAC += E();
-			TAC += ";\n";
+			TAC += "\n";
 		}
 		int cond = multipleDeclaration();
 		if (cond == 1)
@@ -555,11 +564,12 @@ void parser::code()
 		}
 		else
 		{
-			TAC += to_string(line_num) + " " + id;
+			//TAC += to_string(line_num) + " " + id;
+			TAC += id;
 			expect(TokenType::ASSIGN);
 			TAC += " = ";
 			TAC += E();
-			TAC += ";\n";
+			TAC += "\n";
 			if (_lexer.peek(1).tokenType == TokenType::COMMA)
 			{
 				int cond = multipleDeclaration();
@@ -589,7 +599,7 @@ void parser::code()
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::PRINT)
 	{
-		TAC += to_string(line_num) + " ";
+		//TAC += to_string(line_num) + " ";
 		TAC += print();
 		TAC += "\n";
 		line_num++;
@@ -608,7 +618,7 @@ void parser::code()
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::RETURN)
 	{
-		TAC += to_string(line_num) + " ";
+		//TAC += to_string(line_num) + " ";
 		TAC += _return();
 		TAC += "\n";
 		line_num++;
@@ -616,7 +626,7 @@ void parser::code()
 	}
 	else if (_lexer.peek(1).tokenType == TokenType::IN)
 	{
-		TAC += to_string(line_num) + " ";
+		//TAC += to_string(line_num) + " ";
 		TAC += input();
 		TAC += "\n";
 		line_num++;
@@ -636,7 +646,7 @@ void parser::code()
 void parser::parserMain()
 {
 	z();
-	fout_TAC << TAC << endl;
+	fout_TAC.close();
 }
 
 void parser::z()
@@ -644,6 +654,8 @@ void parser::z()
 	if (_lexer.peek(1).tokenType == TokenType::FUNC)
 	{
 		_function();
+		fout_TAC << TAC;
+		TAC = "";
 		z();
 	}
 	else
@@ -653,8 +665,12 @@ void parser::z()
 }
 
 void parser::addToSymbolTable(string type, string symbol){
-	pair<string, string> temp;
-	temp.first = type;
-	temp.second = symbol;
-	fout_symbol_table << "{'" << type << "', '" << symbol << "'}" << endl;
+	
+	fout_symbol_table << type << " " << symbol << " " << currentAddress << endl;
+	if(type == "CHAR"){
+		currentAddress += 1;
+	}
+	else if(type == "INT"){
+		currentAddress += 4;
+	}
 }

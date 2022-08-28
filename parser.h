@@ -10,7 +10,11 @@ class parser
     ofstream fout_TAC;
     int line_num;
     int temp_count;
-    string TAC = "";
+    string TAC;
+    int currentAddress;
+    unordered_map<string, pair<string, string>> symbolTable;
+	unordered_map<string, int> opCodeTable;
+    
 public:
     string newTemp();
     void syntax_error();

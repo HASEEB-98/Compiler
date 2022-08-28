@@ -1,5 +1,6 @@
 #include <iostream>
-#include "parser.h"
+#include "VM.h"
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -10,6 +11,11 @@ int main(int argc, char* argv[])
 		parser _parser(argv[1]);
 		_parser.parserMain();
 
+		machineCodeGenerator _mcg("tac.txt", "symbol_table.txt", "mc.txt");
+		_mcg.generateTACToMachineCode();
+
+		VM _vm(& _mcg);
+		_vm.run();
 	}
 	else if (argc > 2)
 	{ //argument limit exceeds

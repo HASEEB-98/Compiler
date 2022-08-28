@@ -1,5 +1,5 @@
-{'INT', 'i'}
-{'INT', 'z'}
-{'INT', 'y'}
-{'INT', 'x'}
-{'INT', 'num'}
+INT num 0
+INT i 4
+INT z 8
+INT y 12
+INT x 16
