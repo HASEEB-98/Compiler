@@ -8,13 +8,22 @@ begin # Three address code generation starts after here
 	z<-0 int;
 	i    int;
 	num  int;
-	print "Enter the number :";#print 
+
+	print "Enter the number :"; #print 
     in num; #take input
 	if num < 0:
 	begin
 		print "negative number entered\n";#print
 		return 0;# this statement just halt the program
 	end
+    if x<y:
+    begin
+        print "x is less than y";
+    end
+    elif x >y:
+    begin
+        print "x is greater than y";
+    end
     print "\nThe fibonacci series :";#print
     for i<-0, i<num, i<-i+1: # loop calculating actual output
     begin

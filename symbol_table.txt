@@ -1,6 +1,5 @@
-(main , IDENTIFIER)
-(x , IDENTIFIER)
-(y , IDENTIFIER)
-(z , IDENTIFIER)
-(i , IDENTIFIER)
-(num , IDENTIFIER)
+{'INT', 'i'}
+{'INT', 'z'}
+{'INT', 'y'}
+{'INT', 'x'}
+{'INT', 'num'}

@@ -111,7 +111,7 @@
 
 	E -> T {E.s += T.s} R {E.s += R.s}
 	R -> + {R.s = '+'} T {R.s += T.s} R {R.s += R1.s}|- {R.s = '-'} T {R.s += T.s} R {R.s += R1.s}|^
-	T -> F {T.s += F.s} R' {T.s += R'.s}
+	T -> F {T.s = F.s} R' {T.s = R'.s}
 	R' -> * {R'.s = '*'} F {R.s += F.s}| / {R'.s = '/'} F {R.s += F.s}| % {R'.s = '%'} F {R.s += F.s}|^
 	F -> id {F.s id.value} | number {F.s number.value}
 
